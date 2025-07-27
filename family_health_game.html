@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sağlıklı Aile Oyunu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .game-area {
+            padding: 30px;
+        }
+
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .mode-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .mode-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .scenario-game {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .scenario-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .scenario-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            border-color: #4facfe;
+            background: #f0f9ff;
+        }
+
+        .healthy-option {
+            border-color: #10b981;
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .unhealthy-option {
+            border-color: #ef4444;
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #d1fae5;
+            color: #047857;
+            border: 2px solid #10b981;
+        }
+
+        .feedback.incorrect {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 2px solid #ef4444;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .score {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 10px;
+            background: #374151;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .quiz-game {
+            display: none;
+        }
+
+        .quiz-question {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: #f3f4f6;
+            border-color: #6b7280;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+
+        .game-instructions {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .characteristics-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .characteristic-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .characteristic-item.unhealthy {
+            border-left-color: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .game-modes {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🏠 Sağlıklı Aile Oyunu</h1>
+            <p>Sağlıklı ve sağlıksız aile yapılarını keşfet, öğren ve değerlendir!</p>
+        </div>
+
+        <div class="game-area">
+            <div class="score-board">
+                <div class="score">Puan: <span id="score">0</span></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress"></div>
+                </div>
+                <div class="score">Seviye: <span id="level">1</span></div>
+            </div>
+
+            <div class="game-instructions">
+                <h3>🎯 Oyun Talimatları</h3>
+                <p>Bu oyun, aile dinamiklerini anlamanızı ve sağlıklı aile yapılarını tanımanızı sağlar. Farklı oyun modları ile aile terapisi konularını interaktif bir şekilde öğrenebilirsiniz.</p>
+            </div>
+
+            <!-- Ana Menü -->
+            <div id="main-menu" class="game-modes">
+                <div class="mode-card" onclick="startScenarioGame()">
+                    <h3>🎭 Senaryo Oyunu</h3>
+                    <p>Gerçek yaşam durumlarında doğru kararları verin</p>
+                </div>
+                <div class="mode-card" onclick="startQuizGame()">
+                    <h3>🧠 Bilgi Yarışması</h3>
+                    <p>Aile dinamikleri hakkındaki bilginizi test edin</p>
+                </div>
+                <div class="mode-card" onclick="showLearningMode()">
+                    <h3>📚 Öğrenme Modu</h3>
+                    <p>Sağlıklı ve sağlıksız aile özelliklerini inceleyin</p>
+                </div>
+            </div>
+
+            <!-- Senaryo Oyunu -->
+            <div id="scenario-game" class="scenario-game">
+                <h2>🎭 Senaryo Tabanlı Aile Dinamikleri Oyunu</h2>
+                <div id="scenario-container">
+                    <!-- Senaryolar dinamik olarak yüklenecek -->
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="nextScenario()">Sonraki Senaryo</button>
+                    <button class="btn btn-primary" onclick="backToMenu()">Ana Menü</button>
+                </div>
+            </div>
+
+            <!-- Quiz Oyunu -->
+            <div id="quiz-game" class="quiz-game">
+                <h2>🧠 Aile Dinamikleri Bilgi Yarışması</h2>
+                <div id="quiz-container">
+                    <!-- Quiz soruları dinamik olarak yüklenecek -->
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="nextQuestion()">Sonraki Soru</button>
+                    <button class="btn btn-primary" onclick="backToMenu()">Ana Menü</button>
+                </div>
+            </div>
+
+            <!-- Öğrenme Modu -->
+            <div id="learning-mode" style="display: none;">
+                <h2>📚 Aile Dinamikleri Öğrenme Rehberi</h2>
+                
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #10b981;">✅ Sağlıklı Aile Özellikleri</h3>
+                    <div class="characteristics-list">
+                        <div class="characteristic-item">
+                            <h4>💬 Açık İletişim</h4>
+                            <p>Duygular serbestçe paylaşılır, empati ön plandadır. Aile üyeleri birbirini dinler ve anlar.</p>
+                        </div>
+                        <div class="characteristic-item">
+                            <h4>🤝 İşbirliği</h4>
+                            <p>Sorunlar birlikte çözülür, görevler paylaşılır. Herkes elini taşın altına koyar.</p>
+                        </div>
+                        <div class="characteristic-item">
+                            <h4>🎯 Esnek Roller</h4>
+                            <p>Roller açık ama değişime açık, herkes katkıda bulunur. İhtiyaçlara göre esneklik sağlanır.</p>
+                        </div>
+                        <div class="characteristic-item">
+                            <h4>❤️ Karşılıklı Saygı</h4>
+                            <p>Bireysel farklılıklar kabul edilir ve desteklenir. Kimse tek tip olmaya zorlanmaz.</p>
+                        </div>
+                        <div class="characteristic-item">
+                            <h4>🌱 Büyüme Odaklı</h4>
+                            <p>Krizler öğrenme fırsatına dönüştürülür. Bireysel gelişim teşvik edilir.</p>
+                        </div>
+                        <div class="characteristic-item">
+                            <h4>😄 Pozitif Atmosfer</h4>
+                            <p>Mizah ve neşe aile yaşamının parçasıdır. Zorluklar karşısında umut vardır.</p>
+                        </div>
+                        <div class="characteristic-item">
+                            <h4>🏠 Sınırlar ve Güven</h4>
+                            <p>Sağlıklı sınırlar vardır, verilen sözler tutulur. Herkes kendini güvende hisseder.</p>
+                        </div>
+                        <div class="characteristic-item">
+                            <h4>⏰ Kaliteli Zaman</h4>
+                            <p>Aile üyeleri birlikte nitelikli zaman geçirir. Ortak etkinlikler ve ritüeller vardır.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #ef4444;">❌ Sağlıksız Aile Özellikleri</h3>
+                    <div class="characteristics-list">
+                        <div class="characteristic-item unhealthy">
+                            <h4>🚫 Kapalı İletişim</h4>
+                            <p>Duygular bastırılır, eleştiri ve yargılama hakimdir. Açık konuşma yoktur.</p>
+                        </div>
+                        <div class="characteristic-item unhealthy">
+                            <h4>⚔️ Çatışma Odaklı</h4>
+                            <p>Sorunlarda suçlama yapılır, çözüm aranmaz. Negatif etkileşim döngüleri hakimdir.</p>
+                        </div>
+                        <div class="characteristic-item unhealthy">
+                            <h4>🔒 Katı/Kaotik Roller</h4>
+                            <p>Roller ya çok sert ya da belirsizdir. Esneklik yoktur, karmaşa hakimdir.</p>
+                        </div>
+                        <div class="characteristic-item unhealthy">
+                            <h4>💔 Saygısızlık</h4>
+                            <p>Olumsuz etiketleme, kişisel sınırların ihlali. Aşırı bağlılık veya kopukluk vardır.</p>
+                        </div>
+                        <div class="characteristic-item unhealthy">
+                            <h4>😰 Yüksek Stres</h4>
+                            <p>Sürekli gerginlik, başa çıkma zorluğu. Duygusal reaktivite yüksektir.</p>
+                        </div>
+                        <div class="characteristic-item unhealthy">
+                            <h4>🌪️ Olumsuz Döngüler</h4>
+                            <p>Aynı sorunlar tekrar tekrar yaşanır. Kuşaklararası sorun aktarımı vardır.</p>
+                        </div>
+                        <div class="characteristic-item unhealthy">
+                            <h4>🔺 Patolojik Üçgenler</h4>
+                            <p>İki kişi arasındaki soruna üçüncü kişi dahil edilir. Hiyerarşi sorunları vardır.</p>
+                        </div>
+                        <div class="characteristic-item unhealthy">
+                            <h4>🏝️ İzolasyon</h4>
+                            <p>Sosyal destek eksikliği, dışarıdan yardım istemeyi reddetme. Aile içe kapanıktır.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin: 20px 0; background: #f0f9ff; padding: 20px; border-radius: 10px;">
+                    <h3 style="color: #0ea5e9;">📖 ABCX Modeli</h3>
+                    <p style="margin-bottom: 15px;"><strong>A (Stresör Olay):</strong> Ailenin karşılaştığı stres kaynağı (hastalık, iş kaybı, taşınma vb.)</p>
+                    <p style="margin-bottom: 15px;"><strong>B (Kaynaklar):</strong> Ailenin elindeki iç ve dış destek kaynakları</p>
+                    <p style="margin-bottom: 15px;"><strong>C (Algı):</strong> Ailenin olaya yüklediği anlam ve yorumlama biçimi</p>
+                    <p><strong>X (Sonuç):</strong> Bu faktörlerin birleşimine bağlı olarak kriz yaşanıp yaşanmaması</p>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="backToMenu()">Ana Menü</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Oyun durumu
+        let gameState = {
+            score: 0,
+            level: 1,
+            currentScenario: 0,
+            currentQuestion: 0,
+            progress: 0
+        };
+
+        // Senaryolar
+        const scenarios = [
+            {
+                text: "15 yaşındaki kızınız sınavda başarısız olmuş ve eve üzgün bir şekilde gelmiş. Size durumu anlatırken ağlamaya başlıyor.",
+                options: [
+                    { text: "\"Merak etme canım, bir dahaki sefere daha iyi yaparsın. Nerelerde zorlandığını konuşalım, beraber çalışabiliriz.\"", correct: true, type: "healthy" },
+                    { text: "\"Yine mi başarısız oldun? Sana kaç kez çalışman gerektiğini söyledim!\"", correct: false, type: "unhealthy" },
+                    { text: "\"Ağlamayı kes şimdi, olmuş bir şey. Herkese karşı utanç verici durumlara düşürüyorsun bizi.\"", correct: false, type: "unhealthy" }
+                ],
+                feedback: {
+                    correct: "Mükemmel! Destekleyici yaklaşımınız çocuğunuzun özgüvenini korur ve problem çözme odaklı düşünmeyi teşvik eder. Bu, sağlıklı ailede görülen açık iletişim ve duygusal desteğin örneğidir.",
+                    incorrect: "Bu yaklaşım çocuğun özgüvenini zedeler ve ileride size güvenmesini engelleyebilir. Sağlıklı ailelerde duygular bastırılmaz, empati ile yaklaşılır."
+                }
+            },
+            {
+                text: "Eşinizle para konusunda anlaşmazlığa düştünüz. O büyük bir harcama yapmak istiyor, siz ise bu parayı biriktirmenin daha doğru olduğunu düşünüyorsunuz.",
+                options: [
+                    { text: "\"Sen hep saçma sapan şeyler istiyorsun! Bu para bizim geleceğimiz için önemli.\"", correct: false, type: "unhealthy" },
+                    { text: "\"Anlıyorum bu senin için önemli. Oturup ikimizin de önceliklerini konuşalım, bir orta yol bulabiliriz.\"", correct: true, type: "healthy" },
+                    { text: "\"Konuşmak istemiyorum, sen bilirsin.\"", correct: false, type: "unhealthy" }
+                ],
+                feedback: {
+                    correct: "Harika! Empati kurarak ve işbirlikçi yaklaşımla sağlıklı bir çözüm yolu arıyorsunuz. Bu, sağlıklı ailelerde görülen etkili iletişim ve problem çözme becerisinin örneğidir.",
+                    incorrect: "Bu yaklaşım çatışmayı daha da büyütür ve uzun vadede ilişkiye zarar verir. Sağlıklı ailelerde çatışmalar işbirlikçi yaklaşımla çözülür."
+                }
+            },
+            {
+                text: "8 yaşındaki oğlunuz kardeşiyle sürekli kavga ediyor ve oyuncaklarını paylaşmıyor. Bu durum aile huzurunu bozuyor.",
+                options: [
+                    { text: "\"İkiniz de odalarınıza gidin! Kavga ediyorsanız hiç oyun oynamayacaksınız!\"", correct: false, type: "unhealthy" },
+                    { text: "\"Gelin bakalım, bu sorunu birlikte çözelim. Herkesin fikrini dinleyelim ve adil bir çözüm bulalım.\"", correct: true, type: "healthy" },
+                    { text: "\"Büyük olan sen olduğun için kardeşine oyuncağını vermek zorundasın.\"", correct: false, type: "unhealthy" }
+                ],
+                feedback: {
+                    correct: "Çok iyi! Çocuklara problem çözme becerisi kazandırıyor ve adalet duygularını geliştiriyorsunuz. Bu, sağlıklı ailelerde görülen işbirlikçi yaklaşım ve çocuk katılımının örneğidir.",
+                    incorrect: "Bu yaklaşım sorunun kökünü çözmez ve çocuklarda adaletsizlik hissi yaratabilir. Sağlıklı ailelerde çocuklar da karar alma sürecine dahil edilir."
+                }
+            },
+            {
+                text: "Ergen çocuğunuz son zamanlarda sizinle konuşmuyor, odasına kapanıp geliyor. Arkadaşlarıyla daha çok vakit geçirmeyi tercih ediyor.",
+                options: [
+                    { text: "\"Bu yaşlarda normal, büyüdüğünde anlayacak. Saygı duymalıyım ama kapım her zaman açık olduğunu bilmeli.\"", correct: true, type: "healthy" },
+                    { text: "\"Artık bizden utanıyor! Telefonunu ve arkadaşlarını kontrol etmeliyim.\"", correct: false, type: "unhealthy" },
+                    { text: "\"Tamam, istediğini yap. Benimle konuşmak istemiyorsan konuşma.\"", correct: false, type: "unhealthy" }
+                ],
+                feedback: {
+                    correct: "Mükemmel! Ergenlik döneminin doğal sürecini anlıyor ve sağlıklı sınırlar koyuyorsunuz. Bu, sağlıklı ailelerde görülen bireysel farklılıklara saygı ve esnekliğin örneğidir.",
+                    incorrect: "Bu yaklaşım güven sorunlarına yol açar. Sağlıklı ailelerde sınırlar korunur ama aşırı kontrol veya kopukluk olmaz."
+                }
+            },
+            {
+                text: "Ailenizde maddi zorluklar yaşanıyor. Çocuklar bu durumu fark etti ve endişelenmişler.",
+                options: [
+                    { text: "\"Hiçbir şey olmamış gibi davranıp çocukları bu konudan uzak tutmalıyım.\"", correct: false, type: "unhealthy" },
+                    { text: "\"Yaşlarına uygun şekilde durumu açıklayıp birlikte çözüm arayacağımızı söylemeliyim.\"", correct: true, type: "healthy" },
+                    { text: "\"Bu kadar zor durumda olduğumuzu, her şeyin çok kötü olduğunu anlatmalıyım.\"", correct: false, type: "unhealthy" }
+                ],
+                feedback: {
+                    correct: "Harika! Yaşa uygun açıklık yaparak güven oluşturuyor ve aile dayanışmasını güçlendiriyorsunuz. Bu, sağlıklı ailelerde görülen açık iletişim ve birlikte başa çıkmanın örneğidir.",
+                    incorrect: "Aşırı gizlilik veya aşırı detay, çocuklarda güvensizlik yaratır. Sağlıklı ailelerde yaşa uygun şeffaflık vardır."
+                }
+            }
+        ];
+
+        // Quiz soruları
+        const quizQuestions = [
+            {
+                question: "Sağlıklı bir ailenin en önemli özelliklerinden biri nedir?",
+                options: [
+                    "Hiç kavga etmemek",
+                    "Açık ve empatik iletişim kurmak",
+                    "Çocuklara hiç kısıtlama getirmemek",
+                    "Sürekli birlikte olmak"
+                ],
+                correct: 1,
+                explanation: "Sağlıklı aileler açık, empatik ve karşılıklı saygıya dayalı iletişim kurarlar. Kavgalar normal olabilir ama çözüm odaklı yaklaşılır."
+            },
+            {
+                question: "İşlevsel olmayan ailelerde sıkça görülen 'patolojik üçgen' nedir?",
+                options: [
+                    "Üç kişinin aynı anda konuşması",
+                    "İki kişi arasındaki soruna üçüncü birinin dahil edilmesi",
+                    "Üç neslin aynı evde yaşaması",
+                    "Üç farklı görüşün çatışması"
+                ],
+                correct: 1,
+                explanation: "Patolojik üçgen, anne-baba arasındaki sorunlara çocuğun dahil edilmesi gibi durumları ifade eder ve sağlıksız aile dinamiklerine yol açar."
+            },
+            {
+                question: "ABCX modelinde 'C' faktörü neyi ifade eder?",
+                options: [
+                    "Crisis (Kriz)",
+                    "Communication (İletişim)",
+                    "Coping (Başa çıkma)",
+                    "Cognitive appraisal (Olayın algılanışı)"
+                ],
+                correct: 3,
+                explanation: "ABCX modelinde C faktörü, ailenin stresli olaya yüklediği anlam ve yorumlama biçimini ifade eder."
+            },
+            {
+                question: "Sağlıklı ailelerde roller nasıl olmalıdır?",
+                options: [
+                    "Çok katı ve değişmez",
+                    "Hiç belirlenmemiş ve kaotik",
+                    "Açık, işlevsel ve esnek",
+                    "Sadece anne-babanın belirlediği"
+                ],
+                correct: 2,
+                explanation: "Sağlıklı ailelerde roller açık ve işlevseldir, ancak değişen koşullara göre esneklik gösterir."
+            },
+            {
+                question: "İşlevsel olmayan ailelerde duygusal tepkisellik nasıldır?",
+                options: [
+                    "Çok düşük ve bastırılmış",
+                    "Dengeli ve kontrollü",
+                    "Yüksek ve kontrolsüz",
+                    "Sadece pozitif duygular ifade edilir"
+                ],
+                correct: 2,
+                explanation: "İşlevsel olmayan ailelerde duygusal tepkisellik yüksektir, ani öfke patlamaları ve kontrolsüz duygusal tepkiler görülür."
+            },
+            {
+                question: "Sağlıklı ailelerde problem çözme nasıl yapılır?",
+                options: [
+                    "Sadece aile reisi karar verir",
+                    "Herkes kendi başına çözer",
+                    "İşbirlikçi ve çözüm odaklı yaklaşım",
+                    "Sorunlar görmezden gelinir"
+                ],
+                correct: 2,
+                explanation: "Sağlıklı ailelerde problem çözme işbirlikçi, çözüm odaklı ve aile üyelerinin katılımıyla yapılır."
+            }
+        ];
+
+        // Oyun fonksiyonları
+        function updateScore(points) {
+            gameState.score += points;
+            document.getElementById('score').textContent = gameState.score;
+            
+            // Seviye sistemi
+            const newLevel = Math.floor(gameState.score / 100) + 1;
+            if (newLevel > gameState.level) {
+                gameState.level = newLevel;
+                document.getElementById('level').textContent = gameState.level;
+                showLevelUp();
+            }
+            
+            // Progress bar güncelle
+            const progress = (gameState.score % 100);
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        function showLevelUp() {
+            // Seviye atlama animasyonu
+            const levelElement = document.getElementById('level');
+            levelElement.style.animation = 'bounce 0.5s ease-in-out';
+            setTimeout(() => {
+                levelElement.style.animation = '';
+            }, 500);
+        }
+
+        function hideAllGames() {
+            document.getElementById('main-menu').style.display = 'grid';
+            document.getElementById('scenario-game').style.display = 'none';
+            document.getElementById('quiz-game').style.display = 'none';
+            document.getElementById('learning-mode').style.display = 'none';
+        }
+
+        function backToMenu() {
+            hideAllGames();
+        }
+
+        // Senaryo oyunu
+        function startScenarioGame() {
+            hideAllGames();
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('scenario-game').style.display = 'block';
+            gameState.currentScenario = 0;
+            loadScenario();
+        }
+
+        function loadScenario() {
+            const container = document.getElementById('scenario-container');
+            const scenario = scenarios[gameState.currentScenario];
+            
+            container.innerHTML = `
+                <div class="scenario-card">
+                    <div class="scenario-text">${scenario.text}</div>
+                    <div class="options" id="scenario-options">
+                        ${scenario.options.map((option, index) => 
+                            `<div class="option" onclick="selectScenarioOption(${index})">${option.text}</div>`
+                        ).join('')}
+                    </div>
+                    <div class="feedback" id="scenario-feedback"></div>
+                </div>
+            `;
+        }
+
+        function selectScenarioOption(optionIndex) {
+            const scenario = scenarios[gameState.currentScenario];
+            const option = scenario.options[optionIndex];
+            const isCorrect = option.correct;
+            
+            // Seçenekleri renklendir
+            const options = document.querySelectorAll('#scenario-options .option');
+            options.forEach((opt, index) => {
+                if (index === optionIndex) {
+                    opt.classList.add(isCorrect ? 'healthy-option' : 'unhealthy-option');
+                }
+                opt.style.pointerEvents = 'none';
+            });
+            
+            // Feedback göster
+            const feedback = document.getElementById('scenario-feedback');
+            feedback.style.display = 'block';
+            feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedback.innerHTML = `
+                <strong>${isCorrect ? '✅ Doğru Yaklaşım!' : '❌ Daha İyi Yaklaşım Mümkün'}</strong><br>
+                ${isCorrect ? scenario.feedback.correct : scenario.feedback.incorrect}
+            `;
+            
+            // Puan güncelle
+            if (isCorrect) {
+                updateScore(50);
+            }
+        }
+
+        function nextScenario() {
+            gameState.currentScenario = (gameState.currentScenario + 1) % scenarios.length;
+            loadScenario();
+        }
+
+        // Quiz oyunu
+        function startQuizGame() {
+            hideAllGames();
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('quiz-game').style.display = 'block';
+            gameState.currentQuestion = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const container = document.getElementById('quiz-container');
+            const question = quizQuestions[gameState.currentQuestion];
+            
+            container.innerHTML = `
+                <div class="quiz-question">
+                    <div class="question-text">${question.question}</div>
+                    <div class="quiz-options" id="quiz-options">
+                        ${question.options.map((option, index) => 
+                            `<div class="quiz-option" onclick="selectQuizOption(${index})">${option}</div>`
+                        ).join('')}
+                    </div>
+                    <div class="feedback" id="quiz-feedback"></div>
+                </div>
+            `;
+        }
+
+        function selectQuizOption(optionIndex) {
+            const question = quizQuestions[gameState.currentQuestion];
+            const isCorrect = optionIndex === question.correct;
+            
+            // Seçenekleri renklendir
+            const options = document.querySelectorAll('#quiz-options .quiz-option');
+            options.forEach((opt, index) => {
+                if (index === question.correct) {
+                    opt.style.backgroundColor = '#d1fae5';
+                    opt.style.borderColor = '#10b981';
+                } else if (index === optionIndex && !isCorrect) {
+                    opt.style.backgroundColor = '#fee2e2';
+                    opt.style.borderColor = '#ef4444';
+                }
+                opt.style.pointerEvents = 'none';
+            });
+            
+            // Feedback göster
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.style.display = 'block';
+            feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedback.innerHTML = `
+                <strong>${isCorrect ? '✅ Doğru!' : '❌ Yanlış'}</strong><br>
+                ${question.explanation}
+            `;
+            
+            // Puan güncelle
+            if (isCorrect) {
+                updateScore(30);
+            }
+        }
+
+        function nextQuestion() {
+            gameState.currentQuestion = (gameState.currentQuestion + 1) % quizQuestions.length;
+            loadQuestion();
+        }
+
+        // Öğrenme modu
+        function showLearningMode() {
+            hideAllGames();
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('learning-mode').style.display = 'block';
+        }
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ana menüyü göster
+            hideAllGames();
+        });
+    </script>
+</body>
+</html>
